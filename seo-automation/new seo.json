@@ -1,0 +1,1322 @@
+{
+    "name": "seo new",
+    "nodes": [
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=I'm providing you a domain. search for it's keywords and return them like it's service and company \"AI healthcare company\", \"AI startups in healthcare\", \"AI SaaS companies for X.\"\nDomain: {{ $json.Domain }}\nCountry: {{ $json.Country }}\n\nNo explaination just number and list the keywords related to {{ $json.Domain }}",
+                "hasOutputParser": true,
+                "options": {}
+            },
+            "id": "c760b16a-9c80-48d8-b4b5-3bc4b22f011c",
+            "name": "🤖 SERP Scraper Agent (MCP)",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "position": [
+                1264,
+                16
+            ],
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "gpt-4.1-mini"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1.2,
+            "position": [
+                1104,
+                224
+            ],
+            "id": "f1b18d45-8377-402d-b1de-680604a6eb00",
+            "name": "OpenAI Chat Model",
+            "credentials": {
+                "openAiApi": {
+                    "id": "pyxnuk1xaWsOMeBa",
+                    "name": "OpenAi account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "public": true,
+                "initialMessages": "Hi there! How can I assist you today?",
+                "options": {
+                    "responseMode": "lastNode"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.3,
+            "position": [
+                336,
+                -160
+            ],
+            "id": "7650e4ec-fcb6-45d8-8574-43486ff775a8",
+            "name": "When chat message received",
+            "webhookId": "4bc1197b-e90d-400f-a449-4cfa2b919869"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 1431864977,
+                    "mode": "list",
+                    "cachedResultName": "Keywords",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=1431864977"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Domain": "={{ $json.Domain }}",
+                        "Keywords": "={{ $json.Keywords }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "Domain",
+                            "displayName": "Domain",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Keywords",
+                            "displayName": "Keywords",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                2432,
+                16
+            ],
+            "id": "a7d5ce5c-eaf5-4fc7-8eb1-cba4b34f6729",
+            "name": "Append row in sheet",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get the SERP list from the incoming item\nconst serpList = items[0].json.output;\n\n// Emit each result as a separate item\nreturn serpList.map(result => {\n return {\n json: result\n };\n});\n"
+            },
+            "id": "232bbc54-0ce5-402f-a799-8561ee06110a",
+            "name": "🧠 Format SERP Results",
+            "type": "n8n-nodes-base.code",
+            "position": [
+                2688,
+                400
+            ],
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 1053700451,
+                    "mode": "list",
+                    "cachedResultName": "SEO Competitor Websites",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=1053700451"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "rank": "={{ $json.rank }}",
+                        "title": "={{ $json.title }}",
+                        "url": "={{ $json.url }}",
+                        "description": "={{ $json.description }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "rank",
+                            "displayName": "rank",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "title",
+                            "displayName": "title",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "url",
+                            "displayName": "url",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "description",
+                            "displayName": "description",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "id": "9a2404f7-c764-47de-8d7c-1232950af2ef",
+            "name": "📊 Log to Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "position": [
+                2896,
+                400
+            ],
+            "typeVersion": 4.6,
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "f258177e-1a23-4427-8de3-4d651830a22b",
+            "name": "Auto-fixing Output Parser",
+            "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+            "position": [
+                2976,
+                704
+            ],
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "gpt-4o-mini"
+                },
+                "options": {}
+            },
+            "id": "eaef9b54-b485-4605-948f-3c75d524bc13",
+            "name": "OpenAI Chat Model1",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "position": [
+                2960,
+                912
+            ],
+            "typeVersion": 1.2,
+            "credentials": {
+                "openAiApi": {
+                    "id": "wG0C2qNhoeJjCrtM",
+                    "name": "OpenAi account 2"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsonSchemaExample": "[\n {\n \"rank\": 1,\n \"title\": \"Runner's World\",\n \"url\": \"https://www.runnersworld.com/gear/a19663621/best-running-shoes/\",\n \"description\": \"A comprehensive guide on the best running shoes, recommending models like Brooks Ghost and Nike Pegasus for new runners.\"\n },\n {\n \"rank\": 2,\n \"title\": \"RunRepeat\",\n \"url\": \"https://runrepeat.com/catalog/running-shoes\",\n \"description\": \"Offers running shoe reviews with ratings for various models such as Nike Pegasus 41 and Hoka Mach 6.\"\n },\n {\n \"rank\": 3,\n \"title\": \"Believe in the Run\",\n \"url\": \"https://believeintherun.com/shoe-reviews/best-running-shoes-2025/\",\n \"description\": \"Features an in-depth guide to the best running shoes of 2025 across different categories.\"\n },\n {\n \"rank\": 4,\n \"title\": \"The Run Testers\",\n \"url\": \"https://theruntesters.com/running-shoes/the-best-running-shoes-to-buy/\",\n \"description\": \"Reviews the best running shoes available, highlighting their performance and value.\"\n },\n {\n \"rank\": 5,\n \"title\": \"Men's Health\",\n \"url\": \"https://www.menshealth.com/fitness/a64476227/running-shoes-editors-picks/\",\n \"description\": \"Provides a selection of top running shoes recommended by Men's Health editors.\"\n }\n]\n"
+            },
+            "id": "50b5c39c-fc8c-464e-8132-f491d39aad77",
+            "name": "Structured Output Parser1",
+            "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+            "position": [
+                3120,
+                912
+            ],
+            "typeVersion": 1.2
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "value": "gpt-4.1-mini",
+                    "mode": "list",
+                    "cachedResultName": "gpt-4.1-mini"
+                },
+                "options": {}
+            },
+            "id": "f7434944-767d-4b98-a8d8-e2aa2a3f4e5d",
+            "name": "OpenAI Chat Model2",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "position": [
+                2640,
+                704
+            ],
+            "typeVersion": 1.2,
+            "credentials": {
+                "openAiApi": {
+                    "id": "pyxnuk1xaWsOMeBa",
+                    "name": "OpenAi account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=Don't give news websites as result. provide similar company websites based on the following keywords and domain, provide me around 10 websites of companies that match services of input domain that provide similar services. \nkeywords: {{ $json.output }}",
+                "hasOutputParser": true,
+                "options": {}
+            },
+            "id": "fa5b2d5b-2b3d-4fa1-9405-8873b6bb2cb6",
+            "name": "🤖 SERP Scraper Agent (MCP)1",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "position": [
+                2320,
+                400
+            ],
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "content": "Passing a domain to the input and then it will derive the keywords from it in the first half and then it will compare those keywords with the top websites that will appear with help of SERP api and it will list down information of it in the excel sheet! "
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                -144,
+                0
+            ],
+            "typeVersion": 1,
+            "id": "5ec8c28f-58c4-4be3-9a61-fec554447e4e",
+            "name": "Sticky Note"
+        },
+        {
+            "parameters": {
+                "options": {
+                    "gl": "={{ $('Code').item.json.gl }}",
+                    "google_domain": "google.com"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+            "typeVersion": 1,
+            "position": [
+                1392,
+                224
+            ],
+            "id": "cf80222a-d1dd-4464-b1b8-99f0033857c3",
+            "name": "SerpAPI to search keywords from domain",
+            "credentials": {
+                "serpApi": {
+                    "id": "5VKhtIdzuGtwJfBp",
+                    "name": "Sumit"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "\n// 🔹 Get Domain dynamically\nconst domain = $('📝 Input: Keyword & Domain').first().json.Domain;\n\n// 🔹 Get Keywords dynamically\nlet keywords = $input.first().json.output;\n\n// 🛠 Ensure keywords is always an array of clean lines\nif (typeof keywords === \"string\") {\n keywords = keywords\n .split(/\\r?\\n/) // split ONLY on newlines\n .map(k => k.replace(/^[\\s\\-•\\d.]+/, \"\").trim()) // remove bullets, numbers, dashes\n .filter(k => k.length > 0);\n} else if (!Array.isArray(keywords)) {\n keywords = [keywords];\n}\n\n// 🛠 Remove filler text\nkeywords = keywords.filter(k => \n !/^keywords related/i.test(k) &&\n !/^these keywords/i.test(k) &&\n !/^let me know/i.test(k)\n);\n\n// 🔹 Join all keywords into one string with numbering\nconst keywordString = keywords.map((k, i) => ${i + 1}. ${k}).join(\"\\n\");\n\n// 🔹 Return as single row\nreturn [\n {\n json: {\n \"Domain\": domain,\n \"Keywords\": keywordString\n }\n }\n];\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2160,
+                16
+            ],
+            "id": "9e90b126-9814-4a8b-8f5f-12c5c4d32335",
+            "name": "Define sheet format"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+            "typeVersion": 1,
+            "position": [
+                2816,
+                704
+            ],
+            "id": "01a3e170-f081-44e9-8f41-386effdbe41e",
+            "name": "SerpAPI to match keywords with other domains",
+            "credentials": {
+                "serpApi": {
+                    "id": "5VKhtIdzuGtwJfBp",
+                    "name": "Sumit"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "seo",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                336,
+                192
+            ],
+            "id": "b5d6d1a0-535f-4c18-8fe0-5029aa5d61a6",
+            "name": "Webhook",
+            "webhookId": "47f246cc-4c50-4517-9a4d-c156fdc2b1be"
+        },
+        {
+            "parameters": {
+                "respondWith": "allIncomingItems",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.4,
+            "position": [
+                3120,
+                400
+            ],
+            "id": "095aa43f-d5f8-4b09-bc6b-b93d78a1f768",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "sessionIdType": "customKey",
+                "sessionKey": "=Domain: $fromAI('Domain', description=('Extract domain like something.com or someone.in')) "
+            },
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.3,
+            "position": [
+                1248,
+                224
+            ],
+            "id": "3e19acf5-63b1-44ab-9f48-db8fa5ac0fc2",
+            "name": "Simple Memory"
+        },
+        {
+            "parameters": {
+                "jsCode": "// // Take input string from current item\n// const rawString = $json.output || \"\";\n\n// // Process the string (example: split lines, clean numbers)\n// const keywordsArray = rawString\n// .split(\"\\n\")\n// .map(line => line.replace(/^\\d+\\.\\s*/, \"\").trim())\n// .filter(line => line.length > 0);\n\n// // Return a single object containing all keywords\n// return [{ json: { keywords: keywordsArray } }];\n\n\n\n// Take input string from current item\nconst rawString = $json.output || \"\";\n\n// Process into array of keywords\nconst keywordsArray = rawString\n .split(\"\\n\")\n .map(line => line.replace(/^\\d+\\.\\s*/, \"\").trim())\n .filter(line => line.length > 0);\n\n// Build output items with 3 columns\nconst results = keywordsArray.map(keyword => {\n return {\n json: {\n Keyword: keyword,\n }\n };\n});\n\nreturn results;\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2320,
+                -384
+            ],
+            "id": "10c077ef-b473-4554-9f22-1768a58a25f3",
+            "name": "returns array of keywords"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "afb4aa15-34e6-43a2-bc75-ae995415c146",
+                            "name": "=Domain",
+                            "value": "={{ $('Code1').item.json.Domain }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "b6f64975-6e79-492e-b52e-905bab329824",
+                            "name": "Country",
+                            "value": "={{ $json.Country }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "88505fb7-b894-4c15-ad8e-78bfdbeade76",
+                            "name": "GL",
+                            "value": "={{ $json.gl }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "4b399474-3792-4577-b88f-0e4855c3f306",
+            "name": "📝 Input: Keyword & Domain",
+            "type": "n8n-nodes-base.set",
+            "position": [
+                976,
+                16
+            ],
+            "typeVersion": 3.4
+        },
+        {
+            "parameters": {
+                "jsCode": "\n// Country list (shortened here, you can paste full array)\nconst countries = [\n { \"country_code\": \"af\", \"country_name\": \"Afghanistan\" }, { \"country_code\": \"al\", \"country_name\": \"Albania\" }, { \"country_code\": \"dz\", \"country_name\": \"Algeria\" }, { \"country_code\": \"as\", \"country_name\": \"American Samoa\" }, { \"country_code\": \"ad\", \"country_name\": \"Andorra\" }, { \"country_code\": \"ao\", \"country_name\": \"Angola\" }, { \"country_code\": \"ai\", \"country_name\": \"Anguilla\" }, { \"country_code\": \"aq\", \"country_name\": \"Antarctica\" }, { \"country_code\": \"ag\", \"country_name\": \"Antigua and Barbuda\" }, { \"country_code\": \"ar\", \"country_name\": \"Argentina\" }, { \"country_code\": \"am\", \"country_name\": \"Armenia\" }, { \"country_code\": \"aw\", \"country_name\": \"Aruba\" }, { \"country_code\": \"au\", \"country_name\": \"Australia\" }, { \"country_code\": \"at\", \"country_name\": \"Austria\" }, { \"country_code\": \"az\", \"country_name\": \"Azerbaijan\" }, { \"country_code\": \"bs\", \"country_name\": \"Bahamas\" }, { \"country_code\": \"bh\", \"country_name\": \"Bahrain\" }, { \"country_code\": \"bd\", \"country_name\": \"Bangladesh\" }, { \"country_code\": \"bb\", \"country_name\": \"Barbados\" }, { \"country_code\": \"by\", \"country_name\": \"Belarus\" }, { \"country_code\": \"be\", \"country_name\": \"Belgium\" }, { \"country_code\": \"bz\", \"country_name\": \"Belize\" }, { \"country_code\": \"bj\", \"country_name\": \"Benin\" }, { \"country_code\": \"bm\", \"country_name\": \"Bermuda\" }, { \"country_code\": \"bt\", \"country_name\": \"Bhutan\" }, { \"country_code\": \"bo\", \"country_name\": \"Bolivia\" }, { \"country_code\": \"ba\", \"country_name\": \"Bosnia and Herzegovina\" }, { \"country_code\": \"bw\", \"country_name\": \"Botswana\" }, { \"country_code\": \"bv\", \"country_name\": \"Bouvet Island\" }, { \"country_code\": \"br\", \"country_name\": \"Brazil\" }, { \"country_code\": \"io\", \"country_name\": \"British Indian Ocean Territory\" }, { \"country_code\": \"bn\", \"country_name\": \"Brunei Darussalam\" }, { \"country_code\": \"bg\", \"country_name\": \"Bulgaria\" }, { \"country_code\": \"bf\", \"country_name\": \"Burkina Faso\" }, { \"country_code\": \"bi\", \"country_name\": \"Burundi\" }, { \"country_code\": \"kh\", \"country_name\": \"Cambodia\" }, { \"country_code\": \"cm\", \"country_name\": \"Cameroon\" }, { \"country_code\": \"ca\", \"country_name\": \"Canada\" }, { \"country_code\": \"cv\", \"country_name\": \"Cape Verde\" }, { \"country_code\": \"ky\", \"country_name\": \"Cayman Islands\" }, { \"country_code\": \"cf\", \"country_name\": \"Central African Republic\" }, { \"country_code\": \"td\", \"country_name\": \"Chad\" }, { \"country_code\": \"cl\", \"country_name\": \"Chile\" }, { \"country_code\": \"cn\", \"country_name\": \"China\" }, { \"country_code\": \"cx\", \"country_name\": \"Christmas Island\" }, { \"country_code\": \"cc\", \"country_name\": \"Cocos (Keeling) Islands\" }, { \"country_code\": \"co\", \"country_name\": \"Colombia\" }, { \"country_code\": \"km\", \"country_name\": \"Comoros\" }, { \"country_code\": \"cg\", \"country_name\": \"Congo\" }, { \"country_code\": \"cd\", \"country_name\": \"Congo, the Democratic Republic of the\" }, { \"country_code\": \"ck\", \"country_name\": \"Cook Islands\" }, { \"country_code\": \"cr\", \"country_name\": \"Costa Rica\" }, { \"country_code\": \"ci\", \"country_name\": \"Cote D'ivoire\" }, { \"country_code\": \"hr\", \"country_name\": \"Croatia\" }, { \"country_code\": \"cu\", \"country_name\": \"Cuba\" }, { \"country_code\": \"cy\", \"country_name\": \"Cyprus\" }, { \"country_code\": \"cz\", \"country_name\": \"Czech Republic\" }, { \"country_code\": \"dk\", \"country_name\": \"Denmark\" }, { \"country_code\": \"dj\", \"country_name\": \"Djibouti\" }, { \"country_code\": \"dm\", \"country_name\": \"Dominica\" }, { \"country_code\": \"do\", \"country_name\": \"Dominican Republic\" }, { \"country_code\": \"ec\", \"country_name\": \"Ecuador\" }, { \"country_code\": \"eg\", \"country_name\": \"Egypt\" }, { \"country_code\": \"sv\", \"country_name\": \"El Salvador\" }, { \"country_code\": \"gq\", \"country_name\": \"Equatorial Guinea\" }, { \"country_code\": \"er\", \"country_name\": \"Eritrea\" }, { \"country_code\": \"ee\", \"country_name\": \"Estonia\" }, { \"country_code\": \"et\", \"country_name\": \"Ethiopia\" }, { \"country_code\": \"fk\", \"country_name\": \"Falkland Islands (Malvinas)\" }, { \"country_code\": \"fo\", \"country_name\": \"Faroe Islands\" }, { \"country_code\": \"fj\", \"country_name\": \"Fiji\" }, { \"country_code\": \"fi\", \"country_name\": \"Finland\" }, { \"country_code\": \"fr\", \"country_name\": \"France\" }, { \"country_code\": \"gf\", \"country_name\": \"French Guiana\" }, { \"country_code\": \"pf\", \"country_name\": \"French Polynesia\" }, { \"country_code\": \"tf\", \"country_name\": \"French Southern Territories\" }, { \"country_code\": \"ga\", \"country_name\": \"Gabon\" }, { \"country_code\": \"gm\", \"country_name\": \"Gambia\" }, { \"country_code\": \"ge\", \"country_name\": \"Georgia\" }, { \"country_code\": \"de\", \"country_name\": \"Germany\" }, { \"country_code\": \"gh\", \"country_name\": \"Ghana\" }, { \"country_code\": \"gi\", \"country_name\": \"Gibraltar\" }, { \"country_code\": \"gr\", \"country_name\": \"Greece\" }, { \"country_code\": \"gl\", \"country_name\": \"Greenland\" }, { \"country_code\": \"gd\", \"country_name\": \"Grenada\" }, { \"country_code\": \"gp\", \"country_name\": \"Guadeloupe\" }, { \"country_code\": \"gu\", \"country_name\": \"Guam\" }, { \"country_code\": \"gt\", \"country_name\": \"Guatemala\" }, { \"country_code\": \"gg\", \"country_name\": \"Guernsey\" }, { \"country_code\": \"gn\", \"country_name\": \"Guinea\" }, { \"country_code\": \"gw\", \"country_name\": \"Guinea-Bissau\" }, { \"country_code\": \"gy\", \"country_name\": \"Guyana\" }, { \"country_code\": \"ht\", \"country_name\": \"Haiti\" }, { \"country_code\": \"hm\", \"country_name\": \"Heard Island and Mcdonald Islands\" }, { \"country_code\": \"va\", \"country_name\": \"Holy See (Vatican City State)\" }, { \"country_code\": \"hn\", \"country_name\": \"Honduras\" }, { \"country_code\": \"hk\", \"country_name\": \"Hong Kong\" }, { \"country_code\": \"hu\", \"country_name\": \"Hungary\" }, { \"country_code\": \"is\", \"country_name\": \"Iceland\" }, { \"country_code\": \"in\", \"country_name\": \"India\" }, { \"country_code\": \"id\", \"country_name\": \"Indonesia\" }, { \"country_code\": \"ir\", \"country_name\": \"Iran, Islamic Republic of\" }, { \"country_code\": \"iq\", \"country_name\": \"Iraq\" }, { \"country_code\": \"ie\", \"country_name\": \"Ireland\" }, { \"country_code\": \"im\", \"country_name\": \"Isle of Man\" }, { \"country_code\": \"il\", \"country_name\": \"Israel\" }, { \"country_code\": \"it\", \"country_name\": \"Italy\" }, { \"country_code\": \"je\", \"country_name\": \"Jersey\" }, { \"country_code\": \"jm\", \"country_name\": \"Jamaica\" }, { \"country_code\": \"jp\", \"country_name\": \"Japan\" }, { \"country_code\": \"jo\", \"country_name\": \"Jordan\" }, { \"country_code\": \"kz\", \"country_name\": \"Kazakhstan\" }, { \"country_code\": \"ke\", \"country_name\": \"Kenya\" }, { \"country_code\": \"ki\", \"country_name\": \"Kiribati\" }, { \"country_code\": \"kp\", \"country_name\": \"Korea, Democratic People's Republic of\" }, { \"country_code\": \"kr\", \"country_name\": \"Korea, Republic of\" }, { \"country_code\": \"kw\", \"country_name\": \"Kuwait\" }, { \"country_code\": \"kg\", \"country_name\": \"Kyrgyzstan\" }, { \"country_code\": \"la\", \"country_name\": \"Lao People's Democratic Republic\" }, { \"country_code\": \"lv\", \"country_name\": \"Latvia\" }, { \"country_code\": \"lb\", \"country_name\": \"Lebanon\" }, { \"country_code\": \"ls\", \"country_name\": \"Lesotho\" }, { \"country_code\": \"lr\", \"country_name\": \"Liberia\" }, { \"country_code\": \"ly\", \"country_name\": \"Libyan Arab Jamahiriya\" }, { \"country_code\": \"li\", \"country_name\": \"Liechtenstein\" }, { \"country_code\": \"lt\", \"country_name\": \"Lithuania\" }, { \"country_code\": \"lu\", \"country_name\": \"Luxembourg\" }, { \"country_code\": \"mo\", \"country_name\": \"Macao\" }, { \"country_code\": \"mk\", \"country_name\": \"Macedonia, the Former Yugosalv Republic of\" }, { \"country_code\": \"mg\", \"country_name\": \"Madagascar\" }, { \"country_code\": \"mw\", \"country_name\": \"Malawi\" }, { \"country_code\": \"my\", \"country_name\": \"Malaysia\" }, { \"country_code\": \"mv\", \"country_name\": \"Maldives\" }, { \"country_code\": \"ml\", \"country_name\": \"Mali\" }, { \"country_code\": \"mt\", \"country_name\": \"Malta\" }, { \"country_code\": \"mh\", \"country_name\": \"Marshall Islands\" }, { \"country_code\": \"mq\", \"country_name\": \"Martinique\" }, { \"country_code\": \"mr\", \"country_name\": \"Mauritania\" }, { \"country_code\": \"mu\", \"country_name\": \"Mauritius\" }, { \"country_code\": \"yt\", \"country_name\": \"Mayotte\" }, { \"country_code\": \"mx\", \"country_name\": \"Mexico\" }, { \"country_code\": \"fm\", \"country_name\": \"Micronesia, Federated States of\" }, { \"country_code\": \"md\", \"country_name\": \"Moldova, Republic of\" }, { \"country_code\": \"mc\", \"country_name\": \"Monaco\" }, { \"country_code\": \"mn\", \"country_name\": \"Mongolia\" }, { \"country_code\": \"me\", \"country_name\": \"Montenegro\" }, { \"country_code\": \"ms\", \"country_name\": \"Montserrat\" }, { \"country_code\": \"ma\", \"country_name\": \"Morocco\" }, { \"country_code\": \"mz\", \"country_name\": \"Mozambique\" }, { \"country_code\": \"mm\", \"country_name\": \"Myanmar\" }, { \"country_code\": \"na\", \"country_name\": \"Namibia\" }, { \"country_code\": \"nr\", \"country_name\": \"Nauru\" }, { \"country_code\": \"np\", \"country_name\": \"Nepal\" }, { \"country_code\": \"nl\", \"country_name\": \"Netherlands\" }, { \"country_code\": \"an\", \"country_name\": \"Netherlands Antilles\" }, { \"country_code\": \"nc\", \"country_name\": \"New Caledonia\" }, { \"country_code\": \"nz\", \"country_name\": \"New Zealand\" }, { \"country_code\": \"ni\", \"country_name\": \"Nicaragua\" }, { \"country_code\": \"ne\", \"country_name\": \"Niger\" }, { \"country_code\": \"ng\", \"country_name\": \"Nigeria\" }, { \"country_code\": \"nu\", \"country_name\": \"Niue\" }, { \"country_code\": \"nf\", \"country_name\": \"Norfolk Island\" }, { \"country_code\": \"mp\", \"country_name\": \"Northern Mariana Islands\" }, { \"country_code\": \"no\", \"country_name\": \"Norway\" }, { \"country_code\": \"om\", \"country_name\": \"Oman\" }, { \"country_code\": \"pk\", \"country_name\": \"Pakistan\" }, { \"country_code\": \"pw\", \"country_name\": \"Palau\" }, { \"country_code\": \"ps\", \"country_name\": \"Palestinian Territory, Occupied\" }, { \"country_code\": \"pa\", \"country_name\": \"Panama\" }, { \"country_code\": \"pg\", \"country_name\": \"Papua New Guinea\" }, { \"country_code\": \"py\", \"country_name\": \"Paraguay\" }, { \"country_code\": \"pe\", \"country_name\": \"Peru\" }, { \"country_code\": \"ph\", \"country_name\": \"Philippines\" }, { \"country_code\": \"pn\", \"country_name\": \"Pitcairn\" }, { \"country_code\": \"pl\", \"country_name\": \"Poland\" }, { \"country_code\": \"pt\", \"country_name\": \"Portugal\" }, { \"country_code\": \"pr\", \"country_name\": \"Puerto Rico\" }, { \"country_code\": \"qa\", \"country_name\": \"Qatar\" }, { \"country_code\": \"re\", \"country_name\": \"Reunion\" }, { \"country_code\": \"ro\", \"country_name\": \"Romania\" }, { \"country_code\": \"ru\", \"country_name\": \"Russian Federation\" }, { \"country_code\": \"rw\", \"country_name\": \"Rwanda\" }, { \"country_code\": \"sh\", \"country_name\": \"Saint Helena\" }, { \"country_code\": \"kn\", \"country_name\": \"Saint Kitts and Nevis\" }, { \"country_code\": \"lc\", \"country_name\": \"Saint Lucia\" }, { \"country_code\": \"pm\", \"country_name\": \"Saint Pierre and Miquelon\" }, { \"country_code\": \"vc\", \"country_name\": \"Saint Vincent and the Grenadines\" }, { \"country_code\": \"ws\", \"country_name\": \"Samoa\" }, { \"country_code\": \"sm\", \"country_name\": \"San Marino\" }, { \"country_code\": \"st\", \"country_name\": \"Sao Tome and Principe\" }, { \"country_code\": \"sa\", \"country_name\": \"Saudi Arabia\" }, { \"country_code\": \"sn\", \"country_name\": \"Senegal\" }, { \"country_code\": \"rs\", \"country_name\": \"Serbia\" }, { \"country_code\": \"sc\", \"country_name\": \"Seychelles\" }, { \"country_code\": \"sl\", \"country_name\": \"Sierra Leone\" }, { \"country_code\": \"sg\", \"country_name\": \"Singapore\" }, { \"country_code\": \"sk\", \"country_name\": \"Slovakia\" }, { \"country_code\": \"si\", \"country_name\": \"Slovenia\" }, { \"country_code\": \"sb\", \"country_name\": \"Solomon Islands\" }, { \"country_code\": \"so\", \"country_name\": \"Somalia\" }, { \"country_code\": \"za\", \"country_name\": \"South Africa\" }, { \"country_code\": \"gs\", \"country_name\": \"South Georgia and the South Sandwich Islands\" }, { \"country_code\": \"es\", \"country_name\": \"Spain\" }, { \"country_code\": \"lk\", \"country_name\": \"Sri Lanka\" }, { \"country_code\": \"sd\", \"country_name\": \"Sudan\" }, { \"country_code\": \"sr\", \"country_name\": \"Suriname\" }, { \"country_code\": \"sj\", \"country_name\": \"Svalbard and Jan Mayen\" }, { \"country_code\": \"sz\", \"country_name\": \"Swaziland\" }, { \"country_code\": \"se\", \"country_name\": \"Sweden\" }, { \"country_code\": \"ch\", \"country_name\": \"Switzerland\" }, { \"country_code\": \"sy\", \"country_name\": \"Syrian Arab Republic\" }, { \"country_code\": \"tw\", \"country_name\": \"Taiwan, Province of China\" }, { \"country_code\": \"tj\", \"country_name\": \"Tajikistan\" }, { \"country_code\": \"tz\", \"country_name\": \"Tanzania, United Republic of\" }, { \"country_code\": \"th\", \"country_name\": \"Thailand\" }, { \"country_code\": \"tl\", \"country_name\": \"Timor-Leste\" }, { \"country_code\": \"tg\", \"country_name\": \"Togo\" }, { \"country_code\": \"tk\", \"country_name\": \"Tokelau\" }, { \"country_code\": \"to\", \"country_name\": \"Tonga\" }, { \"country_code\": \"tt\", \"country_name\": \"Trinidad and Tobago\" }, { \"country_code\": \"tn\", \"country_name\": \"Tunisia\" }, { \"country_code\": \"tr\", \"country_name\": \"Turkiye\" }, { \"country_code\": \"tm\", \"country_name\": \"Turkmenistan\" }, { \"country_code\": \"tc\", \"country_name\": \"Turks and Caicos Islands\" }, { \"country_code\": \"tv\", \"country_name\": \"Tuvalu\" }, { \"country_code\": \"ug\", \"country_name\": \"Uganda\" }, { \"country_code\": \"ua\", \"country_name\": \"Ukraine\" }, { \"country_code\": \"ae\", \"country_name\": \"United Arab Emirates\" }, { \"country_code\": \"uk\", \"country_name\": \"United Kingdom\" }, { \"country_code\": \"gb\", \"country_name\": \"United Kingdom\" }, { \"country_code\": \"us\", \"country_name\": \"United States\" }, { \"country_code\": \"um\", \"country_name\": \"United States Minor Outlying Islands\" }, { \"country_code\": \"uy\", \"country_name\": \"Uruguay\" }, { \"country_code\": \"uz\", \"country_name\": \"Uzbekistan\" }, { \"country_code\": \"vu\", \"country_name\": \"Vanuatu\" }, { \"country_code\": \"ve\", \"country_name\": \"Venezuela\" }, { \"country_code\": \"vn\", \"country_name\": \"Viet Nam\" }, { \"country_code\": \"vg\", \"country_name\": \"Virgin Islands, British\" }, { \"country_code\": \"vi\", \"country_name\": \"Virgin Islands, U.S.\" }, { \"country_code\": \"wf\", \"country_name\": \"Wallis and Futuna\" }, { \"country_code\": \"eh\", \"country_name\": \"Western Sahara\" }, { \"country_code\": \"ye\", \"country_name\": \"Yemen\" }, { \"country_code\": \"zm\", \"country_name\": \"Zambia\" }, { \"country_code\": \"zw\", \"country_name\": \"Zimbabwe\" },\n];\n\n// Take input country name (from chat trigger or earlier node)\nconst inputCountry = ($input.first().json.Country|| \"\").toLowerCase().trim();\n\n// Try to find a match (case-insensitive)\nconst match = countries.find(c => c.country_name.toLowerCase() === inputCountry);\n\n// If not found, fallback to empty string\nconst gl = match ? match.country_code : \"\";\n\nreturn [\n {\n json: {\n Country: $json.Country || \"\",\n gl: gl\n }\n }\n];\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                752,
+                16
+            ],
+            "id": "19583d27-7327-4b3a-a8b3-6b1f347e11a5",
+            "name": "Code"
+        },
+        {
+            "parameters": {
+                "jsCode": "// const input = $input.first().json.chatInput|| \"\"; // text from chat trigger\n\n// // Extract domain (everything after \"domain is\" until space or \"and\")\n// const domainMatch = input.match(/domain\\s+is\\s+([^\\s]+)/i);\n// const domain = domainMatch ? domainMatch[1].trim() : \"\";\n\n// // Extract country (everything after \"country is\")\n// const countryMatch = input.match(/country\\s+is\\s+([^\\s]+)/i);\n// const country = countryMatch ? countryMatch[1].trim() : \"\";\n\n// return [\n// {\n// json: {\n// Domain: domain,\n// Country: country\n// }\n// }\n// ];\n\n\n\n\n\n\n\n\n\nlet input = $input.first().json.chatInput || $input.first().json.body.domain// Example fallback\n\n// --- Extract domain ---\nlet domain = \"\";\nconst domainRegexes = [\n /domain\\s+is\\s*([^\\s]+)/i, // domain is example.com\n /domain[:\\s]+([^\\s]+)/i, // domain: example.com\n /\\b([a-z0-9.-]+\\.[a-z]{2,})\\b/i // any plain domain pattern like example.com\n];\nfor (const regex of domainRegexes) {\n const match = input.match(regex);\n if (match) {\n domain = match[1].trim();\n break;\n }\n}\n\n// --- Extract country ---\nlet country = \"\";\nconst countryRegexes = [\n /country\\s+is\\s*([a-z\\s]+)/i, // country is India\n /country[:\\s]+([a-z\\s]+)/i, // country: India\n /in\\s+([A-Z][a-z]+)$/i, // ends with \"in India\"\n];\nfor (const regex of countryRegexes) {\n const match = input.match(regex);\n if (match) {\n country = match[1].trim().replace(/[^a-z\\s]/gi, '');\n break;\n }\n}\n\nconsole.log(domain, country);\n// --- Output cleanly ---\nreturn [\n {\n json: {\n Domain: domain || \"Not found\",\n Country: country || \"Not found\"\n }\n }\n];\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                528,
+                16
+            ],
+            "id": "6cb66b6f-b927-4cd4-8b8e-ab41f21f1a36",
+            "name": "Code1"
+        },
+        {
+            "parameters": {
+                "operation": "clear",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1IAPznFau4IhV27GaN_7Qv9y7jGzvBPQXJOEZSFfY-Jo",
+                    "mode": "list",
+                    "cachedResultName": "keywords",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IAPznFau4IhV27GaN_7Qv9y7jGzvBPQXJOEZSFfY-Jo/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 220625761,
+                    "mode": "list",
+                    "cachedResultName": "Sheet3",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IAPznFau4IhV27GaN_7Qv9y7jGzvBPQXJOEZSFfY-Jo/edit#gid=220625761"
+                }
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                2528,
+                -384
+            ],
+            "id": "84cbc468-eb5a-4c0c-8590-bd610715d2c6",
+            "name": "Clear sheet1",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 933556716,
+                    "mode": "list",
+                    "cachedResultName": "keywords for ranking",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=933556716"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                2944,
+                -384
+            ],
+            "id": "98a59d58-49f1-483e-bb52-959c7e8f7f8a",
+            "name": "Get row(s) in sheet",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "url": "=\nhttps://serpapi.com/search.json?q={{ $json.Keyword }}&hl=en&gl=us&api_key=9ba750405d93799ba5ad484eb6206043203ec592d07cdbf15fb375e98be3fb1d\n",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                3504,
+                -144
+            ],
+            "id": "c26a2b09-f82c-4fb0-a9d1-9cfce42b7802",
+            "name": "Take keyword and derive ranks and data1"
+        },
+        {
+            "parameters": {
+                "jsCode": "// const input = $input.first().json;\n\n// const serpRaw = input.body || input; // fallback if body not present\n// let serpData = {};\n\n// // Parse JSON safely\n// if (typeof serpRaw === \"string\") {\n// try {\n// serpData = JSON.parse(serpRaw);\n// } catch {\n// serpData = {};\n// }\n// } else if (typeof serpRaw === \"object\") {\n// serpData = serpRaw;\n// }\n\n// // Get keyword and domain\n// const keyword = $('returns array of keywords').first().json.keyword || \"\";\n// const domainToCheck = $('📝 Input: Keyword & Domain').first().json.Domain || \"\";\n\n// // Get organic results safely\n// const organicResults = $input.first().json.organic_results\n\n// let position = 999;\n// let rankingUrl = \"Not found\";\n\n// for (let i = 0; i < organicResults.length; i++) {\n// const result = organicResults[i];\n// if (result && result.link && domainToCheck && result.link.includes(domainToCheck)) {\n// position = i + 1;\n// rankingUrl = result.link;\n// break;\n// }\n// }\n\n// return [{ json: { keyword, domain: domainToCheck, position, rankingUrl } }];\n\n\n\n// const input = $input.first().json;\n\n// // Step 1: Get raw SERP JSON from HTTP node\n// const serpRaw = input.body || input; \n// let serpData = {};\n\n// // Step 2: Parse JSON safely\n// if (typeof serpRaw === \"string\") {\n// try {\n// serpData = JSON.parse(serpRaw);\n// } catch {\n// serpData = {};\n// }\n// } else if (typeof serpRaw === \"object\") {\n// serpData = serpRaw;\n// }\n\n// // Step 3: Get keyword and domain\n// const keyword = $input.first().json.search_parameters.q;\n// const domainToCheck = 'aiindia.ai';\n\n// // Step 4: Extract organic results safely\n// const organicResults = Array.isArray(serpData.organic_results) ? serpData.organic_results : [];\n\n// // Step 5: Find domain ranking\n// let position = 999;\n// let rankingUrl = \"Not found\";\n\n// function normalizeUrl(url) {\n// if (!url) return \"\";\n// return url.replace(/^https?:\\/\\/(www\\.)?/, \"\").replace(/\\/$/, \"\");\n// }\n\n// const targetDomainNormalized = normalizeUrl(domainToCheck);\n\n// for (let i = 0; i < organicResults.length; i++) {\n// const result = organicResults[i];\n// if (result && result.link) {\n// const resultDomain = normalizeUrl(result.link);\n// if (resultDomain.includes(targetDomainNormalized)) {\n// position = i + 1;\n// rankingUrl = result.link;\n// break;\n// }\n// }\n// }\n\n// return [{ json: { keyword, domain: domainToCheck, position, rankingUrl } }];\n\n\n\n\n// Step 1: Get SERP data directly\nconst serpData = $input.first().json;\n\n// Step 2: Extract keyword & domain\nconst keyword = $input.first().json.search_parameters.q;\nconst domainToCheck = $('📝 Input: Keyword & Domain').first().json.Domain;\n\n// Step 3: Extract organic results\nconst organicResults = Array.isArray(serpData.organic_results) ? serpData.organic_results : [];\n\n// Step 4: Find ranking\nlet position = 999;\nlet rankingUrl = \"Not found\";\n\nfunction normalizeUrl(url) {\n if (!url) return \"\";\n return url.replace(/^https?:\\/\\/(www\\.)?/, \"\").replace(/\\/$/, \"\");\n}\n\nconst targetDomainNormalized = normalizeUrl(domainToCheck);\n\nfor (let i = 0; i < organicResults.length; i++) {\n const result = organicResults[i];\n if (result?.link) {\n const resultDomain = normalizeUrl(result.link);\n if (resultDomain.includes(targetDomainNormalized)) {\n position = i + 1;\n rankingUrl = result.link;\n break;\n }\n }\n}\n\n// Step 5: Return result\nreturn [\n {\n json: {\n Keyword: keyword,\n Domain: domainToCheck,\n Position: position,\n Ranking_URL: rankingUrl,\n },\n },\n];\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                3760,
+                -144
+            ],
+            "id": "0ee7845c-4ad6-480d-b9b6-1685582721fd",
+            "name": "take out keyword domain and rank1"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [
+                3232,
+                -160
+            ],
+            "id": "fac67100-202e-469f-9c41-2dcabb09e017",
+            "name": "Loop Over Items1"
+        },
+        {
+            "parameters": {
+                "amount": 30
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                3952,
+                -288
+            ],
+            "id": "c0f5dcd9-f341-4fb1-a9b3-1a8f72a17604",
+            "name": "Wait",
+            "webhookId": "6a05e7f1-fe86-4784-ab8e-fc3f9c374291"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 132168644,
+                    "mode": "list",
+                    "cachedResultName": "Rankings of website",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=132168644"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Keyword": "={{ $json.Keyword }}",
+                        "Position": "={{ $json.Position }}",
+                        "Ranking URL": "={{ $json.Ranking_URL }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "Keyword",
+                            "displayName": "Keyword",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Position",
+                            "displayName": "Position",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Ranking URL",
+                            "displayName": "Ranking URL",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                4128,
+                -144
+            ],
+            "id": "27d2bf86-2f68-4405-9782-e5f32de8e482",
+            "name": "Append row in sheet2",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 933556716,
+                    "mode": "list",
+                    "cachedResultName": "keywords for ranking",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=933556716"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Keyword": "={{ $json.Keyword }}"
+                    },
+                    "matchingColumns": [
+                        "keywords[0]"
+                    ],
+                    "schema": [
+                        {
+                            "id": "Keyword",
+                            "displayName": "Keyword",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": "Position",
+                            "displayName": "Position",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": true
+                        },
+                        {
+                            "id": "Ranking URL",
+                            "displayName": "Ranking URL",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": true
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                2736,
+                -384
+            ],
+            "id": "60a1a412-97ba-44aa-a138-8d4929fa915f",
+            "name": "Append row in sheet3",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "url": "=https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://{{ $json.Domain }}&category=performance&category=seo&strategy=desktop&key=AIzaSyDoACAy-aiuxHOouVYcNTayZAweIYVh6Os ",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1296,
+                -416
+            ],
+            "id": "f352dae6-88c5-4660-a665-a3a0eb5860bd",
+            "name": "HTTP Request"
+        },
+        {
+            "parameters": {
+                "jsCode": "const data = $json.lighthouseResult.categories;\nconst metrics = $json.lighthouseResult.audits;\n\nreturn {\n json: {\n url:$input.first().json.loadingExperience.id,\n performance_score: data.performance.score * 100,\n seo_score: data.seo.score * 100,\n fcp: metrics['first-contentful-paint'].displayValue,\n lcp: metrics['largest-contentful-paint'].displayValue,\n cls: metrics['cumulative-layout-shift'].displayValue,\n tbt: metrics['total-blocking-time'].displayValue,\n speed_index: metrics['speed-index'].displayValue,\n }\n};\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1504,
+                -416
+            ],
+            "id": "b5222687-9fe2-4550-924f-908abef246e7",
+            "name": "Page reload time"
+        },
+        {
+            "parameters": {
+                "content": "## Rank Keywords\nRanking the keywords based on the appearance of expected site.",
+                "width": 608
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                3232,
+                -368
+            ],
+            "typeVersion": 1,
+            "id": "fe6083d5-2937-4fd8-8842-968edc391aff",
+            "name": "Sticky Note1"
+        },
+        {
+            "parameters": {
+                "content": "## SEO competitors\n** Know the competitors in the market based on the keywords provided"
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                2320,
+                640
+            ],
+            "typeVersion": 1,
+            "id": "211a5ba4-8999-47ff-a159-c70a1ed76a06",
+            "name": "Sticky Note2"
+        },
+        {
+            "parameters": {
+                "content": "## Page speed checker\n"
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                1472,
+                -608
+            ],
+            "typeVersion": 1,
+            "id": "b00ef467-54f3-4279-947c-56930d578af3",
+            "name": "Sticky Note3"
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E",
+                    "mode": "list",
+                    "cachedResultName": "SEO",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 1659186290,
+                    "mode": "list",
+                    "cachedResultName": "Pagespeed",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1MlkviWDqNnvKgvsmclaWMPZBZxGEzc19_JzJCQY7E4E/edit#gid=1659186290"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Speed_Index": "={{ $json.speed_index }}",
+                        "TBT ": "={{ $json.tbt }}",
+                        "CLS ": "={{ $json.cls }}",
+                        "LCP ": "={{ $json.lcp }}",
+                        "FCP": "={{ $json.fcp }}",
+                        "SEO_Score": "={{ $json.seo_score }}",
+                        " Performance_Score ": "={{ $json.performance_score }}",
+                        "URL": "={{ $json.url }}"
+                    },
+                    "matchingColumns": [],
+                    "schema": [
+                        {
+                            "id": "URL",
+                            "displayName": "URL",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true,
+                            "removed": false
+                        },
+                        {
+                            "id": " Performance_Score ",
+                            "displayName": " Performance_Score ",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "SEO_Score",
+                            "displayName": "SEO_Score",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "FCP",
+                            "displayName": "FCP",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "LCP ",
+                            "displayName": "LCP ",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "CLS ",
+                            "displayName": "CLS ",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "TBT ",
+                            "displayName": "TBT ",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        },
+                        {
+                            "id": "Speed_Index",
+                            "displayName": "Speed_Index",
+                            "required": false,
+                            "defaultMatch": false,
+                            "display": true,
+                            "type": "string",
+                            "canBeUsedToMatch": true
+                        }
+                    ],
+                    "attemptToConvertTypes": false,
+                    "convertFieldsToString": false
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.7,
+            "position": [
+                1760,
+                -416
+            ],
+            "id": "da09f625-2a3b-4633-a934-7cb4be96b916",
+            "name": "Append row in sheet1",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "QQTVSGAWLPyAaX65",
+                    "name": "Google Sheets account 3"
+                }
+            }
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "OpenAI Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "When chat message received": {
+            "main": [
+                [
+                    {
+                        "node": "Code1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "🤖 SERP Scraper Agent (MCP)": {
+            "main": [
+                [
+                    {
+                        "node": "returns array of keywords",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Define sheet format",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "🧠 Format SERP Results": {
+            "main": [
+                [
+                    {
+                        "node": "📊 Log to Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Auto-fixing Output Parser": {
+            "ai_outputParser": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)1",
+                        "type": "ai_outputParser",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model1": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Auto-fixing Output Parser",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Structured Output Parser1": {
+            "ai_outputParser": [
+                [
+                    {
+                        "node": "Auto-fixing Output Parser",
+                        "type": "ai_outputParser",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model2": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)1",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "🤖 SERP Scraper Agent (MCP)1": {
+            "main": [
+                [
+                    {
+                        "node": "🧠 Format SERP Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "SerpAPI to search keywords from domain": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Define sheet format": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "SerpAPI to match keywords with other domains": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)1",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Code1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "📊 Log to Google Sheets": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Simple Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "returns array of keywords": {
+            "main": [
+                [
+                    {
+                        "node": "Clear sheet1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "📝 Input: Keyword & Domain": {
+            "main": [
+                [
+                    {
+                        "node": "🤖 SERP Scraper Agent (MCP)",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "HTTP Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code": {
+            "main": [
+                [
+                    {
+                        "node": "📝 Input: Keyword & Domain",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code1": {
+            "main": [
+                [
+                    {
+                        "node": "Code",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Clear sheet1": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet3",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get row(s) in sheet": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Over Items1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Take keyword and derive ranks and data1": {
+            "main": [
+                [
+                    {
+                        "node": "take out keyword domain and rank1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "take out keyword domain and rank1": {
+            "main": [
+                [
+                    {
+                        "node": "Wait",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop Over Items1": {
+            "main": [
+                [],
+                [
+                    {
+                        "node": "Take keyword and derive ranks and data1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet2",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Append row in sheet2": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Over Items1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Append row in sheet3": {
+            "main": [
+                [
+                    {
+                        "node": "Get row(s) in sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "HTTP Request": {
+            "main": [
+                [
+                    {
+                        "node": "Page reload time",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Page reload time": {
+            "main": [
+                [
+                    {
+                        "node": "Append row in sheet1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "60f7d092-73a7-40f9-b32a-2ef4ffa28266",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "abf3f6d0eb40000fee13ae63e81aba37d361a1cc3c6646ff85bf582741f864e9"
+    },
+    "id": "StN5NU2BfTEVaBqm",
+    "tags": []
+}

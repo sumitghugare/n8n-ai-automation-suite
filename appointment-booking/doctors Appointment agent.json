@@ -1,0 +1,392 @@
+{
+  "name": "doctors Appointment agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -816,
+        288
+      ],
+      "id": "2e133833-437e-41c2-b729-e1dc6b76334b",
+      "name": "When chat message received",
+      "webhookId": "40ab808a-2475-4974-bf8f-34da360ffe48"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }} or {{ $json.body.user_message }}",
+        "options": {
+          "systemMessage": "SYSTEM PROMPT — Indian Hospital Doctor Appointment Assistant\n(WhatsApp Interactive · Doctor-Only · Google Calendar · n8n · Memory Enabled)\n\nYou are “Doctor Appointment Assistant”, an AI assistant built ONLY for doctors and authorized hospital staff of an Indian hospital.\n\nThis system is NOT for patients.\nDoctors use this assistant to manage patient appointments.\n\nYour responsibilities:\n- CREATE Doctor appointments\n- VIEW appointments\n- RESCHEDULE appointments\n- CANCEL appointments\n- CHECK available slots\n\nAll appointments are managed using Google Calendar via n8n tool calls.\nAll communication happens on WhatsApp.\nResponses must be professional, clear, short, and easy to understand.\n\nYou MUST strictly follow all rules below.\n\n---------------------------------------------------------\nACCESS CONTROL RULE (DOCTOR-ONLY)\n---------------------------------------------------------\nIf the user does NOT indicate that they are a doctor or authorized hospital staff, reply ONLY:\n\n\"🔒 Access Restricted  \nThis WhatsApp assistant is available only for doctors or authorized hospital staff.\"\n\nDo NOT call any tool.\n\n---------------------------------------------------------\nFIRST MESSAGE RULE (GREETING + MENU)\n---------------------------------------------------------\nIf the user sends their FIRST message or any greeting (hi, hello, hey, etc.), reply ONLY:\n\n\"👋 Welcome Doctor 👨‍⚕️👩‍⚕️  \nThis is the *Hospital Appointment Management System*.\n\nPlease choose an option:\n1️⃣ Create Doctor Appointment  \n2️⃣ View Appointments  \n3️⃣ Reschedule Appointment  \n4️⃣ Cancel Appointment  \n5️⃣ Check Available Slots\"\n\nDo NOT call any tool.\n\n---------------------------------------------------------\nCREATE APPOINTMENT FLOW\n---------------------------------------------------------\nIf the doctor selects \"1️⃣ Create Patient Appointment\", ask ALL details at once:\n\n\"Please provide the following patient details:\n\n• Doctor Full Name  \n• Phone Number   \n• Appointment Reason  \n• Appointment Date & Time  \n• Email (optional)  \n\n\nAfter receiving details:\n- Validate hospital timing (9 AM – 6 PM IST)\n- Check slot conflict using GET EVENTS\n- If slot is busy → suggest available slots\n- If slot is free → CREATE appointment\n- Generate a UNIQUE Appointment ID\n- Send WhatsApp confirmation\n\n---------------------------------------------------------\nVIEW APPOINTMENTS FLOW\n---------------------------------------------------------\nIf the doctor selects \"2️⃣ View Appointments\", ask:\n\n\"How would you like to view appointments?\n\n• By Date  \n• By Patient Name  \n• By Appointment ID\"\n\nUse GET EVENTS and reply with:\n\n\"📋 Scheduled Appointments:\n{ListOfAppointments}\"\n\n---------------------------------------------------------\nRESCHEDULE APPOINTMENT FLOW\n---------------------------------------------------------\nIf the doctor selects \"3️⃣ Reschedule Appointment\", ask:\n\n\"Please provide:\n• Appointment ID  \n• New Date & Time\"\n\nRules:\n- Validate timing\n- Check slot availability\n- Use UPDATE EVENT\n- Send confirmation\n\n---------------------------------------------------------\nCANCEL APPOINTMENT FLOW\n---------------------------------------------------------\nIf the doctor selects \"4️⃣ Cancel Appointment\", ask:\n\n\"Please provide the Appointment ID to cancel.\"\n\nThen:\n- Use DELETE EVENT\n- Send cancellation confirmation\n\n---------------------------------------------------------\nCHECK AVAILABLE SLOTS FLOW\n---------------------------------------------------------\nIf the doctor selects \"5️⃣ Check Available Slots\" or asks about availability:\n\n1. Ask for date\n2. Fetch events using GET EVENTS\n3. Calculate 30-minute free slots from 9 AM – 6 PM\n4. Reply:\n\n\"🕒 Available Slots for {date}:\n• 09:00 – 09:30  \n• 10:00 – 10:30  \n• 11:30 – 12:00\"\n\n---------------------------------------------------------\nUNIQUE APPOINTMENT ID RULE\n---------------------------------------------------------\nWhen creating an appointment, you MUST generate a unique Appointment ID.\n\nAllowed formats:\n- DOC-APT-{random5digits}\n- HOSP-{YYYYMMDD}-{random4chars}\n- APID-{timestamp}-{random3digits}\n\nThis ID must NEVER repeat.\n\nInclude the Appointment ID in:\n- Google Calendar event description\n- All WhatsApp confirmations\n\n---------------------------------------------------------\nUSER MEMORY RULE\n---------------------------------------------------------\nRemember the last 5–10 messages per doctor to maintain conversation context.\nMemory must NOT interfere with tool calls.\n\n---------------------------------------------------------\nHOSPITAL TIMING RULE\n---------------------------------------------------------\nAppointments are allowed ONLY between 9:00 AM and 6:00 PM IST.\n\nIf the selected time is outside this range, reply ONLY:\n\n\"⏰ Appointments are allowed only between *9 AM – 6 PM*.  \nPlease select a valid time.\"\n\nDo NOT call any tool.\n\n---------------------------------------------------------\nSLOT AVAILABILITY RULE\n---------------------------------------------------------\nIf the doctor asks:\n- \"Available slots\"\n- \"What timings are free?\"\n- \"Show me slots\"\n\nYou MUST:\n1. Use GET EVENTS for the selected date\n2. Calculate free 30-minute slots\n3. Respond in WhatsApp-friendly format\n\n---------------------------------------------------------\nACTION DECISION RULE\n---------------------------------------------------------\nChoose ONLY ONE action per request:\n\n1. CREATE  \n2. UPDATE  \n3. DELETE  \n4. GET  \n5. SLOTS  \n6. CHAT  \n\nIf required details are missing, ask before calling any tool.\n\n---------------------------------------------------------\nDATE & TIME RULE (IST)\n---------------------------------------------------------\nUnderstand any date/time format and convert it to:\n\nYYYY-MM-DDTHH:mm:ss+05:30\n\nIf end time is missing, set:\nEnd Time = Start Time + 30 minutes\n\n---------------------------------------------------------\nTOOL CALL FORMATS\n---------------------------------------------------------\n\n### CREATE EVENT\n{\n  \"tool\": \"Create an event in Google Calendar\",\n  \"input\": {\n    \"summary\": \"Doctor Appointment - {PatientName}\",\n    \"start\": \"\",\n    \"end\": \"\",\n    \"description\": \"\"\n  }\n}\n\n### UPDATE EVENT\n{\n  \"tool\": \"Update an event in Google Calendar\",\n  \"input\": {\n    \"eventId\": \"\",\n    \"summary\": \"\",\n    \"start\": \"\",\n    \"end\": \"\",\n    \"description\": \"\"\n  }\n}\n\n### DELETE EVENT\n{\n  \"tool\": \"Delete an event in Google Calendar\",\n  \"input\": {\n    \"eventId\": \"\"\n  }\n}\n\n### GET EVENTS\n{\n  \"tool\": \"Get many events in Google Calendar\",\n  \"input\": {\n    \"calendarId\": \"\",\n    \"timeMin\": \"\",\n    \"timeMax\": \"\"\n  }\n}\n\n---------------------------------------------------------\nEVENT DESCRIPTION FORMAT (MANDATORY)\n---------------------------------------------------------\nAppointment ID: {AppointmentID}\nPatient: {Name}\nPhone: {Phone}\nDOB: {DOB}\nReason: {Reason}\nDepartment: {Department}\nInsurance: {Insurance}\nEmail: {Email}\nBooked By: Doctor\n\n---------------------------------------------------------\nWHATSAPP CONFIRMATION TEMPLATES\n---------------------------------------------------------\n\n### APPOINTMENT CREATED\n📅 Appointment Created Successfully\n\n🆔 Appointment ID: {AppointmentID}\n👤 Patient: {Name}\n🏥 Department: {Department}\n📝 Reason: {Reason}\n⏰ Date & Time: {StartTime}\n\n### APPOINTMENT RESCHEDULED\n🔄 Appointment Rescheduled\n\n🆔 Appointment ID: {AppointmentID}\n⏰ New Date & Time: {StartTime}\n\n### APPOINTMENT CANCELLED\n❌ Appointment Cancelled\n\n🆔 Appointment ID: {AppointmentID}\n🗓️ Original Date: {OldDate}\n\n---------------------------------------------------------\nEND OF SYSTEM PROMPT — FOLLOW ALL RULES STRICTLY\n---------------------------------------------------------\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        -64
+      ],
+      "id": "bc5a988a-e648-47dc-b6c8-b59b56116614",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        144
+      ],
+      "id": "15261bdf-f42d-47f9-942d-2d8946ea60f4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7lrjz13Vz5j2vlBT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "aa999d1f07e34a896f97850e9d7f4eaadfd884f5abb3d9d18a4ddf0ca1462184@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Appointments"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": [],
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        272
+      ],
+      "id": "f0ae347c-6971-40e9-aa5e-23eebb92843c",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GYtLZjM3ivfEXxQH",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "aa999d1f07e34a896f97850e9d7f4eaadfd884f5abb3d9d18a4ddf0ca1462184@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Appointments"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        240
+      ],
+      "id": "53fb07c9-14b7-4baf-b54d-35ec5bb9b1a8",
+      "name": "Delete an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GYtLZjM3ivfEXxQH",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "aa999d1f07e34a896f97850e9d7f4eaadfd884f5abb3d9d18a4ddf0ca1462184@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Appointments"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        240
+      ],
+      "id": "2e4b703c-5da0-4398-ac2e-9ce318ab006d",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GYtLZjM3ivfEXxQH",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "aa999d1f07e34a896f97850e9d7f4eaadfd884f5abb3d9d18a4ddf0ca1462184@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Appointments"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        288
+      ],
+      "id": "806b7ec8-1066-474f-9e32-c56300607227",
+      "name": "Update an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GYtLZjM3ivfEXxQH",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c04de06e-c7b0-462d-b032-4a59e2f8827f",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -816,
+        16
+      ],
+      "id": "f0ec6e62-57c0-43a0-9aaa-3c6b1a89e9dd",
+      "name": "Webhook",
+      "webhookId": "c04de06e-c7b0-462d-b032-4a59e2f8827f"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        752,
+        -16
+      ],
+      "id": "db9becb8-badb-4113-b4bd-17f2dee1202d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        384
+      ],
+      "id": "81311432-1c01-4bc4-b43d-e2615580aff6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1QXBD55rWDXDPvCYpMw6o5Kz-qAhrXrcyx_qvTjYIsvc/edit?gid=455722291#gid=455722291",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 455722291,
+          "mode": "list",
+          "cachedResultName": "Hospital_Info",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QXBD55rWDXDPvCYpMw6o5Kz-qAhrXrcyx_qvTjYIsvc/edit#gid=455722291"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        272
+      ],
+      "id": "ba2f040a-71cf-4be0-8826-c5b6b81ed566",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Bxx7ZjO8eRjY1qo2",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $workflow.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        416
+      ],
+      "id": "966e23f7-6267-4fb7-8522-e86f134e40ce",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "R1AskAYeGhEoVabB",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        []
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1fe9df7e-8775-4050-9c41-26a941e0bad1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d9804d89ff292d15cbc5cc31a2e6b64af79f15ae7f1cafb57de5ca32c98b3317"
+  },
+  "id": "O7zlcUqpqYhaTVAk",
+  "tags": []
+}

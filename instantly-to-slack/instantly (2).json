@@ -1,0 +1,228 @@
+{
+  "name": "instantly",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8a1821a3-c7aa-401a-8809-17128d3161f2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n\nreturn items.map(item => {\n  const data = item.json;\n\n  const formatted = `\n📌 *Instantly Update*\n\n• ID: ${data.id || \"N/A\"}\n• Name: ${data.name || \"N/A\"}\n• Status: ${data.status === 1 ? \"Active\" : \"Inactive\"}\n\n⏱ Created: ${data.timestamp_created || \"N/A\"}\n⏱ Updated: ${data.timestamp_updated || \"N/A\"}\n`;\n\n  return {\n    json: {\n      text: formatted.trim()\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6c5a116f-4d93-468c-8bb2-b6bde7998d85",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "78a3e068-977c-446a-b0be-0076cba654fc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        592,
+        240
+      ],
+      "id": "f6dc3d28-c13e-4e24-8da7-559ed1926c35",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7lrjz13Vz5j2vlBT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09SAGQS3QV",
+          "mode": "list",
+          "cachedResultName": "aiindia"
+        },
+        "text": "=\n{{ $json.output }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1056,
+        96
+      ],
+      "id": "c88258e3-c2e2-4bc1-98d0-ea6b1c95dc8d",
+      "name": "Send a message",
+      "webhookId": "f401640a-8b84-4088-bf3d-120b56d674bc",
+      "credentials": {
+        "slackApi": {
+          "id": "PeyZXNzIBfLLmKvK",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "campaignId": {
+          "__rl": true,
+          "value": "007357f8-c4b7-40e4-8ca4-4cb255e567d1",
+          "mode": "list",
+          "cachedResultName": "aiindia"
+        }
+      },
+      "type": "n8n-nodes-instantly.instantly",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "97000056-d639-4aff-9541-f0891779699a",
+      "name": "Get a campaign",
+      "credentials": {
+        "instantlyApi": {
+          "id": "usnAO0o6b92lbORx",
+          "name": "Instantly account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "campaignId": {
+          "__rl": true,
+          "value": "6d75b276-2097-40c9-b8a5-edc1cd8e9af8",
+          "mode": "list",
+          "cachedResultName": "aiindia"
+        }
+      },
+      "type": "n8n-nodes-instantly.instantly",
+      "typeVersion": 1,
+      "position": [
+        208,
+        272
+      ],
+      "id": "bf011192-91be-4617-9745-8eec625a2050",
+      "name": "Get a campaign1",
+      "credentials": {
+        "instantlyApi": {
+          "id": "usnAO0o6b92lbORx",
+          "name": "Instantly account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get a campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Get a campaign": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a campaign1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b76f3692-4deb-41ca-acda-263b9551cb27",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d9804d89ff292d15cbc5cc31a2e6b64af79f15ae7f1cafb57de5ca32c98b3317"
+  },
+  "id": "OOBpH0u47wCjPF39",
+  "tags": []
+}
